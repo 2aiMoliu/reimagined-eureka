@@ -9,12 +9,12 @@ import ScanDetail from './components/ScanDetail'
 export default function App() {
    const [view, setView] = useState<View>('scan')
    const [selectedId, setSelectedId] = useState<string | null>(null)
-   const [lastScanResult, setLastScanResult] = useState<{ barcode: string; format: string } | null>(null)
    const { records, addRecord, deleteRecord, getRecord } = useScanHistory()
 
    const handleScan = useCallback((barcode: string, format: string) => {
-      addRecord(barcode, format)
-      setLastScanResult({ barcode, format })
+      const record = addRecord(barcode, format)
+      setSelectedId(record.id)
+      setView('detail')
    }, [addRecord])
 
    const handleSelect = useCallback((id: string) => {
@@ -42,7 +42,7 @@ export default function App() {
          <Header currentView={view} onNavigate={handleNavigate} />
          <main className="flex-1 pt-12 overflow-hidden">
             {view === 'scan' && (
-               <ScanView onScan={handleScan} lastResult={lastScanResult} />
+               <ScanView onScan={handleScan} />
             )}
             {view === 'history' && (
                <HistoryView records={records} onSelect={handleSelect} onDelete={handleDelete} />
